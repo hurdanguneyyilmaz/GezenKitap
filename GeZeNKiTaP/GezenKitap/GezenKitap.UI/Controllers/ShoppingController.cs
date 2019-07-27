@@ -14,27 +14,17 @@ namespace GezenKitap.UI.Controllers
 {
     public class ShoppingController : Controller
     {
-        ApplicationDbContext db;
+        
         OrderConcrete orderconcrete;
-        BookConcrete bookconcrete;
-        ApplicationUserConcrete userconcrete;
+        
 
         public ShoppingController()
         {
-            db = new ApplicationDbContext();
-            orderconcrete = new OrderConcrete();
-            bookconcrete = new BookConcrete();
-            userconcrete = new ApplicationUserConcrete();
-        }
-        public ActionResult GoToPayment()
-        {
-            List<Order> cart = db.Orders.Where(z => z.State != OrderState.Tamamlandi && z.ApplicationUser_Id == User.Identity.GetUserId() ).ToList();
-
             
-
-            ViewBag.Orders = cart;
-            return View(db.Users.Find(User.Identity.GetUserId() ));
+            orderconcrete = new OrderConcrete();
+            
         }
+        
 
         
 
@@ -46,28 +36,29 @@ namespace GezenKitap.UI.Controllers
 
         
 
-        public ActionResult Cart(int id)
+        public ActionResult Cart(int type)//burada önceden int id yazıyordu ama ben onu Order tablosundaki id zannediyordum. meğersem burdaki id nin mantığı  istek ve talep sayfalarını göstermek içinmiş.
         {
             var userid = User.Identity.GetUserId();
 
-            IEnumerable<Order> orders;
-            if (id == 1)
-                orders = db.Orders.Where(x => x.ApplicationUser_Id == userid
-                && x.State != OrderState.Tamamlandi ).ToList();
-            else 
-                orders = db.Orders.Where(x => x.Book.UserID == userid
-                            && x.State != OrderState.Tamamlandi).ToList();
+            //IEnumerable<Order> orders;
+            //if (id == 1)
+            //    orders = db.Orders.Where(x => x.ApplicationUser_Id == userid
+            //    && x.State != OrderState.Tamamlandi ).ToList();
+            //else 
+            //    orders = db.Orders.Where(x => x.Book.UserID == userid
+            //                && x.State != OrderState.Tamamlandi).ToList();
             
 
-            return View(orders);
+            return View(orderconcrete.GetOrders(userid, type));//yukarda yorum satırına aldığımız yeri orderconcerete içerisinde tanımladık.
         }
 
         public ActionResult RemoveFromCart(int id)
         {
-            var order = orderconcrete.OrderRepository.Get(x => x.OrderID == id);
-            order.State = OrderState.Iptal;
-            orderconcrete.OrderRepository.Update(order);
-            orderconcrete.OrderUnitOfWork.SaveChanges();
+            //var order = orderconcrete.OrderRepository.Get(x => x.OrderID == id);
+            //order.State = OrderState.Iptal;
+            //orderconcrete.OrderRepository.Update(order);
+            //orderconcrete.OrderUnitOfWork.SaveChanges();
+            orderconcrete.RemoveFromCart(id);
 
             return Redirect(Request.UrlReferrer.ToString());
         }

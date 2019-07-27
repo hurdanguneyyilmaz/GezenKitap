@@ -7,25 +7,27 @@
 
         var userid = User.Identity.GetUserId();
         var ord = new GezenKitap.BLL.Concrete.OrderConcrete();
-        var istekler = ord.OrderRepository.GetAll(x=> x.ApplicationUser_Id == userid
-                    && x.State != GezenKitap.DATA.EnumsInterface.OrderState.Tamamlandi).Count();
-        var talepler = ord.OrderRepository.GetAll(x => x.Book.UserID == userid
-                            && x.State != GezenKitap.DATA.EnumsInterface.OrderState.Tamamlandi).Count();
+
+        //var istekler = ord.OrderRepository.GetAll(x=> x.ApplicationUser_Id == userid
+        //            && x.State != GezenKitap.DATA.EnumsInterface.OrderState.Tamamlandi).Count();
+        //var talepler = ord.OrderRepository.GetAll(x => x.Book.UserID == userid
+        //                    && x.State != GezenKitap.DATA.EnumsInterface.OrderState.Tamamlandi).Count();
 
 <ul class="nav navbar-nav navbar-right">
     @*<li>
             @Html.ActionLink("Hello " + User.Identity.GetUserName() + "!", "Index", "Manage", routeValues: null, htmlAttributes: new { title = "Manage" })
         </li>*@
     <li>
-        <a href="@Url.Action("Cart", "Shopping", new { id = 1 })">
+        @* @Url.Action("Cart", "Shopping", new { type = 1 }) href in içine bunu da yazabiliriz bunu da /Shopping/Cart?type=2 yazabiliriz*@
+        <a href="/Shopping/Cart?type=1">
             İstekler
-            <span class="badge">@istekler</span>
+            <span class="badge">@ord.RequestCount(userid)</span>
         </a>
     </li>
     <li>
-        <a href="@Url.Action("Cart", "Shopping", new { id = 2 })">
+        <a href="@Url.Action("Cart", "Shopping", new { type = 2 })">
             Talepler
-            <span class="badge">@talepler</span>
+            <span class="badge">@ord.RequestedCount(userid)</span>
         </a>
     </li>
     <li><a href="@Url.Action("UpdateProfile", "Account")">@User.Identity.Name </a></li>

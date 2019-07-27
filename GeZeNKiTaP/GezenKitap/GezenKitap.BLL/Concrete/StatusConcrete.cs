@@ -22,5 +22,10 @@ namespace GezenKitap.BLL.Concrete
             StatusUnitOfWork = new EFUnitOfWork(_dbContext);
             StatusRepository = StatusUnitOfWork.GetRepository<Status>();
         }
+
+        public IEnumerable<Status> GetStatusList()
+        {
+            return StatusRepository.GetAll().ToList();
+        }
     }
 }

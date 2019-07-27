@@ -9,47 +9,68 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using GezenKitap.BLL.Concrete;
 
 namespace GezenKitap.UI.Controllers
 {
     public class BookController : Controller
     {
-        ApplicationDbContext db;
-        EFRepository<Book> repBook;
-        EFUnitOfWork uow;
+        BookConcrete bookConcrete;
+        CategoryConcrete categoryConcrete;
+        AuthorConcrete authorConcrete;
+        StatusConcrete statusConcrete;
+        ReviewConcrete reviewConcrete;
+        //ApplicationDbContext db;
+        //EFRepository<Book> repBook;
+        //EFUnitOfWork uow;
 
         public BookController()
         {
-            db = new ApplicationDbContext();
-            repBook = new EFRepository<Book>(db);
-            uow = new EFUnitOfWork(db);
+            bookConcrete = new BookConcrete();
+            categoryConcrete = new CategoryConcrete();
+            authorConcrete = new AuthorConcrete();
+            statusConcrete = new StatusConcrete();
+            reviewConcrete = new ReviewConcrete();
+            //db = new ApplicationDbContext();
+            //repBook = new EFRepository<Book>(db);
+            //uow = new EFUnitOfWork(db);
         }
 
         public ActionResult Book(int id)
         {
             var UserID = User.Identity.GetUserId();
-            return View(db.Books.Where(x => x.CategoryID == id 
-                        && x.UserID != UserID
-                        && x.IsActive && !x.IsDelete).ToList());
+            //return View(db.Books.Where(x => x.CategoryID == id 
+            //            && x.UserID != UserID
+            //            && x.IsActive && !x.IsDelete).ToList());
+            var model = bookConcrete.GetBooksbyCategoryID(id, UserID);
+            return View(model);//burda kurduğumuz modelle view tarafındaki Model ile burayı geri alıyoruz...
         }
 
         [Authorize]
         public ActionResult AddBook(int? id)
         {
-            ViewData["CategoryID"] = new SelectList(db.Categories.ToList().Select(x => new
+            ViewData["CategoryID"] = new SelectList(
+                //db.Categories.ToList()
+                categoryConcrete.GetCategoryList()
+                .Select(x => new
             {
                 x.CategoryID,
                 x.CategoryName
             }), "CategoryID", "CategoryName");
 
             ViewData["AuthorID"] = new SelectList(
-                db.Authors.ToList().Select(x => new {
+                //db.Authors.ToList()
+                authorConcrete.GetAuthorList()
+                .Select(x => new {
                     x.AuthorID,
                     AuthorName = x.FirstName + " " + x.LastName
                 })
                 , "AuthorID", "AuthorName");
 
-            ViewData["StatusID"] = new SelectList(db.Statuses.ToList().Select(x => new
+            ViewData["StatusID"] = new SelectList(
+                //db.Statuses.ToList()
+                statusConcrete.GetStatusList()
+                .Select(x => new
             {
                 x.StatusID,
                 x.StatusName
@@ -66,20 +87,28 @@ namespace GezenKitap.UI.Controllers
         [HttpPost]
         public ActionResult AddBook(Book model)
         {
-            ViewData["CategoryID"] = new SelectList(db.Categories.ToList().Select(x => new
+            ViewData["CategoryID"] = new SelectList(
+                //db.Categories.ToList()
+                categoryConcrete.GetCategoryList()
+                .Select(x => new
             {
                 x.CategoryID,
                 x.CategoryName
             }), "CategoryID", "CategoryName");
 
             ViewData["AuthorID"] = new SelectList(
-                db.Authors.ToList().Select(x => new {
+                //db.Authors.ToList()
+                authorConcrete.GetAuthorList()
+                .Select(x => new {
                     x.AuthorID,
                     AuthorName = x.FirstName + " " + x.LastName
                 })
                 , "AuthorID", "AuthorName");
 
-            ViewData["StatusID"] = new SelectList(db.Statuses.ToList().Select(x => new
+            ViewData["StatusID"] = new SelectList(
+                //db.Statuses.ToList()
+                statusConcrete.GetStatusList()
+                .Select(x => new
             {
                 x.StatusID,
                 x.StatusName
@@ -120,8 +149,9 @@ namespace GezenKitap.UI.Controllers
             {
                 try
                 {
-                    repBook.Add(model);
-                    uow.SaveChanges();
+                    //repBook.Add(model);
+                    //uow.SaveChanges();
+                    bookConcrete.AddBook(model);
 
                     return RedirectToAction("MyBooks","Book");
                 }
@@ -138,26 +168,34 @@ namespace GezenKitap.UI.Controllers
         //int dolu geleceği için  int in yanındaki ? işaretini kaldırdık...
         public ActionResult UpdateBook(int id)
         {
-            ViewData["CategoryID"] = new SelectList(db.Categories.ToList().Select(x => new
+            ViewData["CategoryID"] = new SelectList(
+                //db.Categories.ToList()
+                categoryConcrete.GetCategoryList()
+                .Select(x => new
             {
                 x.CategoryID,
                 x.CategoryName
             }), "CategoryID", "CategoryName");
 
             ViewData["AuthorID"] = new SelectList(
-                db.Authors.ToList().Select(x => new {
+                //db.Authors.ToList()
+                authorConcrete.GetAuthorList()
+                .Select(x => new {
                     x.AuthorID,
                     AuthorName = x.FirstName + " " + x.LastName
                 })
                 , "AuthorID", "AuthorName");
 
-            ViewData["StatusID"] = new SelectList(db.Statuses.ToList().Select(x => new
+            ViewData["StatusID"] = new SelectList(
+                //db.Statuses.ToList()
+                statusConcrete.GetStatusList()
+                .Select(x => new
             {
                 x.StatusID,
                 x.StatusName
             }), "StatusID", "StatusName");
 
-            var model = repBook.GetById(id);
+            var model = bookConcrete.BookRepository.GetById(id);
             return View(model);
         }
 
@@ -166,20 +204,28 @@ namespace GezenKitap.UI.Controllers
         [HttpPost]
         public ActionResult UpdateBook(Book model)
         {
-            ViewData["CategoryID"] = new SelectList(db.Categories.ToList().Select(x => new
+            ViewData["CategoryID"] = new SelectList(
+                //db.Categories.ToList()
+                categoryConcrete.GetCategoryList()
+                .Select(x => new
             {
                 x.CategoryID,
                 x.CategoryName
             }), "CategoryID", "CategoryName");
 
             ViewData["AuthorID"] = new SelectList(
-                db.Authors.ToList().Select(x => new {
+                //db.Authors.ToList()
+                authorConcrete.GetAuthorList()
+                .Select(x => new {
                     x.AuthorID,
                     AuthorName = x.FirstName + " " + x.LastName
                 })
                 , "AuthorID", "AuthorName");
 
-            ViewData["StatusID"] = new SelectList(db.Statuses.ToList().Select(x => new
+            ViewData["StatusID"] = new SelectList(
+                //db.Statuses.ToList()
+                statusConcrete.GetStatusList()
+                .Select(x => new
             {
                 x.StatusID,
                 x.StatusName
@@ -215,8 +261,9 @@ namespace GezenKitap.UI.Controllers
             {
                 try
                 {
-                    repBook.Update(model);
-                    uow.SaveChanges();
+                    //repBook.Update(model);
+                    //uow.SaveChanges();
+                    bookConcrete.Update(model);
 
                     return RedirectToAction("MyBooks");
                 }
@@ -233,13 +280,16 @@ namespace GezenKitap.UI.Controllers
         public ActionResult MyBooks()
         {
             var UserID = User.Identity.GetUserId();
-            return View(db.Books.Where(x => x.UserID == UserID && !x.IsDelete).ToList());
+            //return View(db.Books.Where(x => x.UserID == UserID && !x.IsDelete).ToList());
+            var model = bookConcrete.MyBooks(UserID);
+            return View(model);
         }
 
         public ActionResult BookDetail(int id)
         {
-            ViewData["Reviews"] = db.Reviews.Where(x => x.BookID == id && x.IsDeleted == false).ToList();
-            return View(db.Books.Find(id));
+            ViewData["Reviews"] = reviewConcrete.GetReviewsbyBookID(id); //db.Reviews.Where(x => x.BookID == id && x.IsDeleted == false).ToList();
+                
+            return View(bookConcrete.GetBook(id));
         }
                 
         [HttpPost]
@@ -255,8 +305,9 @@ namespace GezenKitap.UI.Controllers
                 Rate = int.Parse(frm["rate"])
             };
 
-            db.Reviews.Add(review);
-            db.SaveChanges();
+            //db.Reviews.Add(review);
+            //db.SaveChanges();
+            reviewConcrete.AddReview(review);
 
             return RedirectToAction("BookDetail", new { id = id });
         }

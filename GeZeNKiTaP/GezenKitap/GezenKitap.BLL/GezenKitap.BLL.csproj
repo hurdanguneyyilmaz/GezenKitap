@@ -54,6 +54,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Abstract\IAuthorConcrete.cs" />
+    <Compile Include="Abstract\IBookConcrete.cs" />
+    <Compile Include="Abstract\ICategoryConcrete.cs" />
+    <Compile Include="Abstract\IOrderConcrete.cs" />
+    <Compile Include="Abstract\IReviewConcrete.cs" />
+    <Compile Include="Abstract\IStatusConcrete.cs" />
     <Compile Include="Concrete\ApplicationUserConcrete.cs" />
     <Compile Include="Concrete\AuthorConcrete.cs" />
     <Compile Include="Concrete\BookConcrete.cs" />

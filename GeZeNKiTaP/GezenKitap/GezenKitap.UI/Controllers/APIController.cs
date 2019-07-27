@@ -18,14 +18,16 @@ namespace GezenKitap.UI.Controllers
     public class APIController : ApiController
     {
         Mail mail;
-        ApplicationDbContext db;
+        //ApplicationDbContext db;
+        AuthorConcrete authorConcrete;
         OrderConcrete orderconcrete;
         BookConcrete bookconcrete;
         ApplicationUserConcrete userconcrete;
 
         public APIController()
         {
-            db = new ApplicationDbContext();
+            //db = new ApplicationDbContext();
+            authorConcrete = new AuthorConcrete();
             orderconcrete = new OrderConcrete();
             bookconcrete = new BookConcrete();
             userconcrete = new ApplicationUserConcrete();
@@ -35,22 +37,22 @@ namespace GezenKitap.UI.Controllers
         [HttpPost]
         public int AddAuthor(Author item)
         {
-            EFRepository<Author> rep = new EFRepository<Author>(db);
-
-            rep.Add(item);
-
-            //db.Authors.Add(item);
-            db.SaveChanges();
-
-            return item.AuthorID;
+            //EFRepository<Author> rep = new EFRepository<Author>(db);            
+            //rep.Add(item);
+            //db.SaveChanges();
+            
+            
+            return authorConcrete.AddAuthor(item);
         }
 
         [HttpPost]
         public bool DeleteBook(int id)
         {
-            EFRepository<Book> rep = new EFRepository<Book>(db);
-            rep.Delete(id);
-            return db.SaveChanges() == 1;
+            //EFRepository<Book> rep = new EFRepository<Book>(db);
+            //rep.Delete(id);
+            //return db.SaveChanges() == 1;
+
+            return bookconcrete.DeleteBook(id);
         }
 
 
@@ -143,13 +145,13 @@ namespace GezenKitap.UI.Controllers
             if (!book.IsActive || book.IsDelete || book.UserID == userid)
                 throw new Exception("Bu kitap talep etmek için uygun değil.");
 
-            if (db.Orders.Any(x => x.BookID == id && x.ApplicationUser_Id == userid
-                 && x.State >= OrderState.Istek))
+            if (orderconcrete.RequestedOrder(userid,id))
                 throw new Exception("Bu kitap için daha önce istek yaptınız.");
 
 
-            Order od = db.Orders.FirstOrDefault(x => x.BookID == id
-                && x.State >= OrderState.Kargolandi);
+            Order od = orderconcrete.OrderFoD(id);
+                //db.Orders.FirstOrDefault(x => x.BookID == id
+                //&& x.State >= OrderState.Kargolandi);
 
             if (od == null) // yeni kayıt
             {
@@ -161,8 +163,9 @@ namespace GezenKitap.UI.Controllers
                 //od.Discount = db.Products.Find(id).Discount;
                 od.OrderDate = DateTime.Now;
 
-                db.Orders.Add(od);
-                db.SaveChanges();
+                orderconcrete.AddOrder(od);
+                //db.Orders.Add(od);
+                //db.SaveChanges();
                 
                 mail.SendMail(
                     alici.Email, "Kitap Talebi Yapıldı",

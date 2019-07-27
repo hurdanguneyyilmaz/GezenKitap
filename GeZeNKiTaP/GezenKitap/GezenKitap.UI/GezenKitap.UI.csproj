@@ -284,7 +284,6 @@
     <Content Include="Views\Book\AddBook.cshtml" />
     <Content Include="Views\Shopping\Cart.cshtml" />
     <Content Include="Views\Shopping\FinishShopping.cshtml" />
-    <Content Include="Views\Shopping\GoToPayment.cshtml" />
     <Content Include="Views\Book\MyBooks.cshtml" />
     <Content Include="Views\Book\UpdateBook.cshtml" />
     <Content Include="Views\Account\UpdateProfile.cshtml" />

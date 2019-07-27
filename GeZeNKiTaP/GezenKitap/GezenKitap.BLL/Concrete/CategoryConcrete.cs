@@ -22,5 +22,10 @@ namespace GezenKitap.BLL.Concrete
             CategoryUnitOfWork = new EFUnitOfWork(_dbContext);
             CategoryRepository = CategoryUnitOfWork.GetRepository<Category>();
         }
+
+        public IEnumerable<Category> GetCategoryList()
+        {
+            return CategoryRepository.GetAll(x=> x.IsActive==true).ToList();//GetAll IQueryble olduğu için toList(),toArray() vb. yazmamız lazım...
+        }
     }
 }

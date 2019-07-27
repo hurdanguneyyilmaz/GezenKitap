@@ -25,11 +25,6 @@ namespace GezenKitap.BLL.Repository
             _dbSet = dbContext.Set<T>();
         }
 
-        public void AddRange(List<T> entities)
-        {
-            _dbSet.AddRange(entities);
-
-        }
 
         public IQueryable<T> GetAll()
         {
@@ -85,5 +80,10 @@ namespace GezenKitap.BLL.Repository
             }
         }
       
+        public void AddRange(List<T> entities)
+        {
+            _dbSet.AddRange(entities);
+
+        }
     }
 }
